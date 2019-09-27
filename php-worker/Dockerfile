@@ -33,57 +33,66 @@ ARG PGID=1000
 ENV PGID ${PGID}
 
 RUN addgroup -g ${PGID} laradock && \
-    adduser -D -G laradock -u ${PUID} laradock
+  adduser -D -G laradock -u ${PUID} laradock
 
 #Install SOAP package:
 ARG INSTALL_SOAP=false
 RUN if [ ${INSTALL_SOAP} = true ]; then \
-    docker-php-ext-install soap \
-;fi
+  docker-php-ext-install soap \
+  ;fi
 
+# ###########################################################################
+# # PHP REDIS EXTENSION
+# ###########################################################################
+
+# ARG INSTALL_PHPREDIS=false
+# RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
+#   apt-get update -yqq && \
+#   apt-get install -yqq php-redis \
+#   ;fi
 #Install BCMath package:
 ARG INSTALL_BCMATH=false
 RUN if [ ${INSTALL_BCMATH} = true ]; then \
-    docker-php-ext-install bcmath \
-;fi
+  docker-php-ext-install bcmath \
+  ;fi
 
 # Install PostgreSQL drivers:
 ARG INSTALL_PGSQL=false
 RUN if [ ${INSTALL_PGSQL} = true ]; then \
-    apk --update add postgresql-dev \
-        && docker-php-ext-install pdo_pgsql \
-;fi
+  apk --update add postgresql-dev \
+  && docker-php-ext-install pdo_pgsql \
+  ;fi
 
 # Install ZipArchive:
 ARG INSTALL_ZIP_ARCHIVE=false
 RUN if [ ${INSTALL_ZIP_ARCHIVE} = true ]; then \
-    apk --update add libzip-dev && \
-    docker-php-ext-configure zip --with-libzip && \
-    # Install the zip extension
-    docker-php-ext-install zip \
-;fi
+  apk --update add libzip-dev && \
+  docker-php-ext-configure zip --with-libzip && \
+  # Install the zip extension
+  docker-php-ext-install zip \
+  ;fi
 
 # Install MySQL Client:
 ARG INSTALL_MYSQL_CLIENT=false
 RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
-    apk --update add mysql-client \
-;fi
+  apk --update add mysql-client \
+  ;fi
 
 # Install FFMPEG:
 ARG INSTALL_FFMPEG=false
 RUN if [ ${INSTALL_FFMPEG} = true ]; then \
-    apk --update add ffmpeg \
-;fi
+  apk --update add ffmpeg \
+  ;fi
 
 # Install AMQP:
 ARG INSTALL_AMQP=false
 
 RUN if [ ${INSTALL_AMQP} = true ]; then \
-    apk --update add rabbitmq-c rabbitmq-c-dev && \
-    pecl install amqp && \
-    docker-php-ext-enable amqp && \
-    docker-php-ext-install sockets \
-;fi
+  apk --update add rabbitmq-c rabbitmq-c-dev && \
+  pecl install amqp && \
+  docker-php-ext-enable amqp && \
+  docker-php-ext-install sockets \
+  ;fi
 
 # Install Cassandra drivers:
 ARG INSTALL_CASSANDRA=false
@@ -103,7 +112,7 @@ RUN if [ ${INSTALL_CASSANDRA} = true ]; then \
   && make >/dev/null 2>&1 \
   && make install \
   && docker-php-ext-enable cassandra \
-;fi
+  ;fi
 
 # Install Phalcon ext
 ARG INSTALL_PHALCON=false
@@ -111,28 +120,28 @@ ARG PHALCON_VERSION
 ENV PHALCON_VERSION ${PHALCON_VERSION}
 
 RUN if [ $INSTALL_PHALCON = true ]; then \
-    apk --update add unzip gcc make re2c bash\
-    && curl -L -o /tmp/cphalcon.zip https://github.com/phalcon/cphalcon/archive/v${PHALCON_VERSION}.zip \
-    && unzip -d /tmp/ /tmp/cphalcon.zip \
-    && cd /tmp/cphalcon-${PHALCON_VERSION}/build \
-    && ./install \
-    && rm -rf /tmp/cphalcon* \
-;fi
+  apk --update add unzip gcc make re2c bash\
+  && curl -L -o /tmp/cphalcon.zip https://github.com/phalcon/cphalcon/archive/v${PHALCON_VERSION}.zip \
+  && unzip -d /tmp/ /tmp/cphalcon.zip \
+  && cd /tmp/cphalcon-${PHALCON_VERSION}/build \
+  && ./install \
+  && rm -rf /tmp/cphalcon* \
+  ;fi
 
 RUN if [ $INSTALL_GHOSTSCRIPT = true ]; then \
-    apk --update add ghostscript \
-;fi
+  apk --update add ghostscript \
+  ;fi
 
 #Install GMP package:
 ARG INSTALL_GMP=false
 RUN if [ ${INSTALL_GMP} = true ]; then \
-   apk add --update --no-cache gmp gmp-dev \
-   && docker-php-ext-install gmp \
-;fi
+  apk add --update --no-cache gmp gmp-dev \
+  && docker-php-ext-install gmp \
+  ;fi
 
 
 RUN rm /var/cache/apk/* \
-    && mkdir -p /var/www
+  && mkdir -p /var/www
 
 
 ###########################################################################
@@ -142,18 +151,18 @@ RUN rm /var/cache/apk/* \
 ARG INSTALL_SWOOLE=false
 
 RUN if [ ${INSTALL_SWOOLE} = true ]; then \
-    # Install Php Swoole Extension
-    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
-      pecl -q install swoole-2.0.10; \
-    else \
-      if [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ]; then \
-        pecl install swoole-2.2.0; \
-      else \
-        pecl install swoole; \
-      fi \
-    fi \
-    && docker-php-ext-enable swoole \
-;fi
+  # Install Php Swoole Extension
+  if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+  pecl -q install swoole-2.0.10; \
+  else \
+  if [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ]; then \
+  pecl install swoole-2.2.0; \
+  else \
+  pecl install swoole; \
+  fi \
+  fi \
+  && docker-php-ext-enable swoole \
+  ;fi
 
 ###########################################################################
 # Taint EXTENSION
@@ -162,12 +171,12 @@ RUN if [ ${INSTALL_SWOOLE} = true ]; then \
 ARG INSTALL_TAINT=false
 
 RUN if [ ${INSTALL_TAINT} = true ]; then \
-    # Install Php TAINT Extension
-    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
-      pecl install taint; \
-    fi && \
-    docker-php-ext-enable taint \
-;fi
+  # Install Php TAINT Extension
+  if [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
+  pecl install taint; \
+  fi && \
+  docker-php-ext-enable taint \
+  ;fi
 
 #
 #--------------------------------------------------------------------------
@@ -189,7 +198,7 @@ ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c",  "/etc/supervisord.conf"]
 #
 # If you need to modify this image, feel free to do it right here.
 #
-    # -- Your awesome modifications go here -- #
+# -- Your awesome modifications go here -- #
 
 #
 #--------------------------------------------------------------------------
