@@ -15,7 +15,7 @@ server {
     # ssl_certificate /etc/nginx/ssl/default.crt;
     # ssl_certificate_key /etc/nginx/ssl/default.key;
 
-    server_name laravel.test;
+    server_name devtalk.test;
     root /var/www/laravel/public;
     index index.php index.html index.htm;
 
